@@ -55,16 +55,19 @@ func (stream *TokenStream) Read(p []byte) (n int, err error) {
 
 	//fill up enough of the json buffer to copy some data for the caller
 	var maxRead int
+	err = nil
 	for {
 		maxRead = min(len(p), len(stream.dec.buf)-stream.dec.scanp)
 		if maxRead > 0 {
 			break
 		}
-		err = stream.dec.refill()
+
 		if err != nil {
 			stream.state = Done
 			return 0, err
 		}
+
+		err = stream.dec.refill()
 	}
 
 	maxScanp := stream.dec.scanp + maxRead
@@ -110,5 +113,9 @@ func (stream *TokenStream) Read(p []byte) (n int, err error) {
 
 end:
 	//fmt.Printf("Returning %v bytes\n", j)
-	return j, nil
+	if j < len(p) && stream.state == Done {
+		return j, io.EOF
+	} else {
+		return j, nil
+	}
 }
