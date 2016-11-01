@@ -83,6 +83,7 @@ func (stream *TokenStream) Read(p []byte) (n int, err error) {
 		//fmt.Printf("reading byte %c, v=%v\n", c, v)
 		if v == scanEnd {
 			stream.dec.tokenState = tokenObjectComma
+			j -= 1
 			stream.state = Done
 			goto end
 		}
