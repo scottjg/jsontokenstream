@@ -59,6 +59,12 @@ func (stream *TokenStream) Read(p []byte) (n int, err error) {
 	for {
 		maxRead = min(len(p), len(stream.dec.buf)-stream.dec.scanp)
 		if maxRead > 0 {
+			if err == io.EOF {
+				//if there's more bytes to read, process them
+				//instead of just failing with EOF, we'll get
+				//an EOF again next attempt to read.
+				err = nil
+			}
 			break
 		}
 
